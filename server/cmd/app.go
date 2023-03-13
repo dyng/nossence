@@ -40,7 +40,7 @@ func NewApplication() *Application {
 	neo4j := database.NewNeo4jDb(config)
 	service := service.NewService(config, neo4j)
 	crawler := nostr.NewCrawler(service)
-	bot := bot.NewBotApplication(config)
+	bot := bot.NewBotApplication(config, service)
 	return &Application{
 		config:  config,
 		neo4j:   neo4j,

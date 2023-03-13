@@ -15,6 +15,10 @@ type Client struct {
 	Relays map[string]*nostr.Relay
 }
 
+type ClientImpl interface {
+	Repost(ctx context.Context, sk, id, author string) error
+}
+
 func DecodeNsec(nsec string) (string, error) {
 	prefix, val, err := nip19.Decode(nsec)
 	if err != nil {

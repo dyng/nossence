@@ -16,6 +16,10 @@ type Service struct {
 	neo4j  *database.Neo4jDb
 }
 
+type ServiceImpl interface {
+	GetFeed() any
+}
+
 func NewService(config *types.Config, neo4j *database.Neo4jDb) *Service {
 	return &Service{
 		config: config,
@@ -23,23 +27,23 @@ func NewService(config *types.Config, neo4j *database.Neo4jDb) *Service {
 	}
 }
 
-func (s *Service) GetFeed() any {
-	type feedEntry struct {
-		Id        string    `json:"event_id"`
-		Kind      int       `json:"kind"`
-		Pubkey    string    `json:"pubkey"`
-		Content   string    `json:"content"`
-		CreatedAt time.Time `json:"created_at"`
-		Summary   string    `json:"summary"`
-		Title     string    `json:"title"`
-		Image     string    `json:"image"`
-		Like      int       `json:"like"`
-		Repost    int       `json:"repost"`
-		Reply     int       `json:"reply"`
-		Zap       int       `json:"zap"`
-		Relay     []string  `json:"relay"`
-	}
+type FeedEntry struct {
+	Id        string    `json:"event_id"`
+	Kind      int       `json:"kind"`
+	Pubkey    string    `json:"pubkey"`
+	Content   string    `json:"content"`
+	CreatedAt time.Time `json:"created_at"`
+	Summary   string    `json:"summary"`
+	Title     string    `json:"title"`
+	Image     string    `json:"image"`
+	Like      int       `json:"like"`
+	Repost    int       `json:"repost"`
+	Reply     int       `json:"reply"`
+	Zap       int       `json:"zap"`
+	Relay     []string  `json:"relay"`
+}
 
+func (s *Service) GetFeed() any {
 	posts, err := s.neo4j.ExecuteRead(func(tx neo4j.ManagedTransaction) (any, error) {
 		ctx := context.Background()
 
@@ -48,10 +52,10 @@ func (s *Service) GetFeed() any {
 			return nil, err
 		}
 
-		posts := make([]feedEntry, 0)
+		posts := make([]FeedEntry, 0)
 		for result.Next(ctx) {
 			record := result.Record()
-			post := feedEntry{
+			post := FeedEntry{
 				Id:        record.Values[0].(string),
 				Kind:      int(record.Values[1].(int64)),
 				Pubkey:    record.Values[2].(string),

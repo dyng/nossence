@@ -32,7 +32,7 @@ func getIdentity() (sk, pub string) {
 }
 
 func getReceiverPub() string {
-	receiverPub := os.Getenv("NOSTR_RECEIVER_PUB")
+	receiverPub := os.Getenv("NOSTR_TEST_RECEIVER_PUB")
 	pub, err := DecodeNpub(receiverPub)
 	if err != nil {
 		return ""
